@@ -9,6 +9,7 @@ public class SpringLearnDemoApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(SpringLearnDemoApplication.class, args);
+
     }
 
 }
