@@ -42,6 +42,5 @@ public class TestUtil {
 
         return c;
     }
-        // 返回字符串t的最后一个字符
 
 }
