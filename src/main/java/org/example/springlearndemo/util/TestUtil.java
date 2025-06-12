@@ -43,4 +43,22 @@ public class TestUtil {
         return c;
     }
 
+    //力扣28
+    public int strStr(String haystack, String needle) {
+        int res = -1;
+        if (haystack.length() < needle.length()) {
+            return res;
+        }
+        for (int i = 0; i < haystack.length(); i++) {
+            if (haystack.length()-1-i < needle.length()){
+                return -1;
+            }
+            if (haystack.substring(i, i + needle.length()).equals(needle)){
+                res = i;
+                break;
+            }
+        }
+        return res;
+    }
+
 }
