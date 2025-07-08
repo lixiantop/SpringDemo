@@ -1,13 +1,241 @@
 package org.example.springlearndemo.util;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class TestUtil {
 
     public static void main(String[] args) {
+        Thread t = new Thread(() -> {
+            System.out.println("hello world");
+        });
+        t.start();
 
-        System.out.println(repeatedSubstringPattern("ababab"));
+    }
+
+    public class ListNode {
+      int val;
+     ListNode next;
+     ListNode() {}
+      ListNode(int val) { this.val = val; }
+     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ }
+
+    public ListNode addTwoNumbersV2(ListNode l1, ListNode l2) {
+        ListNode tailL1 = reverseList(l1);
+        ListNode tailL2 = reverseList(l2);
+        ListNode head = addTwoNumbersV1(tailL1, tailL2);
+        return reverseList(head);
+    }
+
+    public ListNode addTwoNumbersV1(ListNode l1, ListNode l2) {
+        ListNode head = new ListNode();
+        ListNode temp = head;
+        int carry = 0;
+        while (l1 !=null || l2 != null) {
+            int sum = carry;
+            if (l1 != null) {
+                sum += l1.val;
+                l1 = l1.next;
+            }
+            if (l2 != null) {
+                sum += l2.val;
+                l2 = l2.next;
+            }
+            temp.next = new ListNode(sum % 10);
+            temp = temp.next;
+            carry = sum / 10;
+        }
+        if (carry > 0) {
+            temp.next = new ListNode(carry);
+        }
+        return head.next;
+    }
+
+    public ListNode reverseList(ListNode head) {
+        ListNode pre = null;
+        ListNode cur = head;
+        while (cur != null) {
+            ListNode next = cur.next;
+            cur.next = pre;
+            pre = cur;
+            cur = next;
+        }
+
+        return pre;
+    }
+
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        if (list1 == null) {
+            return list2;
+        }
+        if (list2 == null) {
+            return list1;
+        }
+        ListNode head = new ListNode();
+        ListNode temp = head;
+        while (list1 != null && list2 != null) {
+            if (list1.val < list2.val) {
+                temp.next = list1;
+                list1 = list1.next;
+            } else {
+                temp.next = list2;
+                list2 = list2.next;
+            }
+            temp = temp.next;
+        }
+        if (list1 != null) {
+            temp.next = list1;
+        }
+        if (list2 != null) {
+            temp.next = list2;
+        }
+        return head.next;
+
+    }
+
+    public boolean checkStraightLine(int[][] coordinates) {
+        for (int i = 0; i < coordinates.length - 2; i++) {
+            if ((coordinates[i + 1][1] - coordinates[i][1]) * (coordinates[i + 2][0] - coordinates[i + 1][0]) != (coordinates[i + 2][1] - coordinates[i + 1][1]) * (coordinates[i + 1][0] - coordinates[i][0]))
+                return false;
+        }
+
+
+        return true;
+    }
+
+    public boolean lemonadeChange(int[] bills) {
+        int five = 0, ten = 0;
+        for (int i = 0; i < bills.length; i++) {
+            if (bills[i] == 5) {
+                five++;
+            } else if (bills[i] == 10) {
+                if (five == 0) {
+                    return false;
+                }
+                five--;
+                ten++;
+            } else if (bills[i] == 20) {
+                if (ten > 0 && five > 0){
+                    ten--;
+                    five--;
+                } else if (five >= 3){
+                    five -= 3;
+                } else{
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public double average(int[] salary) {
+        double sum = 0;
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < salary.length; i++) {
+            sum += salary[i];
+            if (salary[i] < min) {
+                min = salary[i];
+            }
+            if (salary[i] > max) {
+                max = salary[i];
+            }
+        }
+        sum = sum - min - max;
+        return sum / salary.length;
+    }
+
+    public String tictactoe(int[][] moves) {
+        for(int i=0; i<moves.length; i++){
+            if(moves[i][0] == moves[i][1] && moves[i][1] == moves[i][2])
+                return "A";
+            if (moves[0][i] == moves[1][i] && moves[1][i] == moves[2][i])
+                return "B";
+        }
+        return "Draw";
+    }
+
+    public boolean judgeCircle(String moves) {
+        boolean res = false;
+        int x = 0, y = 0;
+        for (char c : moves.toCharArray()) {
+            if (c == 'U') {
+                x++;
+            } else if (c == 'D') {
+                x--;
+            } else if (c == 'L') {
+                y++;
+            } else if (c == 'R') {
+                y--;
+            }
+        }
+        if (x==0 && y==0) {
+            res = true;
+        }
+        return res;
+    }
+
+    public int calPoints(String[] operations) {
+        int sum = 0;
+        List<Integer> list = new ArrayList<>();
+        Stack<Integer> stack = new Stack<>();
+        for (String s : operations) {
+            switch (s) {
+                case "C":
+                    sum -= stack.pop();
+                    break;
+                case "D":
+                    sum += 2 * stack.peek();
+                    stack.push(2 * stack.peek());
+                    break;
+                case "+":
+                    sum += stack.peek() + stack.get(stack.size() - 2);
+                    stack.push(stack.peek() + stack.get(stack.size() - 2));
+                    break;
+                default:
+                    stack.push(Integer.parseInt(s));
+                    sum += Integer.parseInt(s);
+                    break;
+            }
+        }
+        return sum;
+    }
+
+    public int possibleStringCount(String word) {
+        int count = 1;
+        for(int i=0; i<word.length()-1; i++){
+            for (int j = i+1; j < word.length(); j++){
+                if (word.charAt(i) == word.charAt(j))
+                    count++;
+                else break;
+            }
+        }
+
+        return count;
+    }
+
+    public String toLowerCase(String s) {
+        for(int i=0; i<s.length(); i++){
+            if(s.charAt(i) >= 'A' && s.charAt(i) <= 'Z'){
+                s = s.replace(s.charAt(i), (char)(s.charAt(i) + 32));
+            }
+        }
+        return s;
+    }
+
+    public boolean canMakeArithmeticProgression(int[] arr) {
+        boolean res = false;
+        //arr排序
+        Arrays.sort(arr);
+        for (int i = 1; i < arr.length - 1; i++) {
+            if (arr[i] - arr[i - 1] == arr[i + 1] - arr[i]) {
+                res = true;
+            } else {
+                res = false;
+                break;
+            }
+        }
+        return res;
     }
 
     //力扣1432
