@@ -4,23 +4,23 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+
+@Service
 public class TestUtil {
 
+    @Autowired
+    private static StringRedisTemplate stringRedisTemplate;
+
+
     public static void main(String[] args) {
-        String config = "bean.xml";
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(config);
-
-        SequentialThreadExecutionJoin join = (SequentialThreadExecutionJoin) applicationContext.getBean("join");
-        join.test();
-
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MILLISECOND, 1);
+        calendar.add(Calendar.HOUR, 1000);
         String token = JWT.create()
                 .withClaim("nae","ceshgi")
                 .withExpiresAt(calendar.getTime())
@@ -33,10 +33,16 @@ public class TestUtil {
         System.out.println(verify.getHeader());
         System.out.println(verify.getSignature());
 
+        // 使用注入的StringRedisTemplate
+        redisOperation();
+        System.out.println("Redis操作完成");
+    }
+    
+    // 将Redis操作提取到单独的方法中
+    public static void redisOperation() {
+        stringRedisTemplate.opsForValue().set("a", "b");
         Integer test = null;
         System.out.println(test==1);
-
-
     }
 
     public long perfectPairs(int[] nums) {
