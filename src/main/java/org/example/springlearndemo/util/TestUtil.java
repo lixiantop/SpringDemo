@@ -1,24 +1,305 @@
 package org.example.springlearndemo.util;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class TestUtil {
 
     public static void main(String[] args) {
-        Thread t = new Thread(() -> {
-            System.out.println("hello world");
-        });
-        t.start();
+        String config = "bean.xml";
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(config);
+
+        SequentialThreadExecutionJoin join = (SequentialThreadExecutionJoin) applicationContext.getBean("join");
+        join.test();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MILLISECOND, 1);
+        String token = JWT.create()
+                .withClaim("nae","ceshgi")
+                .withExpiresAt(calendar.getTime())
+                .sign(Algorithm.HMAC256("asdasdas0000asdasdasd"));
+        System.out.println(token);
+
+        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256("asdasdas0000asdasdasd")).build();
+        DecodedJWT verify = jwtVerifier.verify(token);
+        System.out.println(verify.getClaim("nae"));
+        System.out.println(verify.getHeader());
+        System.out.println(verify.getSignature());
+
+        Integer test = null;
+        System.out.println(test==1);
+
 
     }
 
-    public class ListNode {
-      int val;
-     ListNode next;
-     ListNode() {}
-      ListNode(int val) { this.val = val; }
-     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
- }
+    public long perfectPairs(int[] nums) {
+        long sum = 0;
+        for (int i=0; i<nums.length; i++){
+            nums[i] = Math.abs(nums[i]);
+        }
+        Arrays.sort(nums);
+
+        int start = 0;
+        for (int j=1; j<nums.length; j++){
+            int half = (nums[j]+1)/2;
+            while (start<j && nums[j]<=half){
+                start++;
+            }
+            sum += j-start;
+        }
+
+        return sum;
+    }
+
+    public int minSensors(int n, int m, int k) {
+        int width = 2*k+1;
+        int rows = (n + width - 1) / width;
+        int cols = (m + width - 1) / width;
+        return rows * cols;
+    }
+
+    public static int findDuplicate(int[] nums) {
+        int res = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            res ^= nums[i];
+        }
+        return res;
+    }
+
+    public static void executeTasksInOrder() {
+        CompletableFuture<Void> T1 = CompletableFuture.runAsync(() -> {
+            // T1的任务代码
+            System.out.println("Task T1 is running");
+        });
+
+
+        CompletableFuture<Void> T2 = T1.thenComposeAsync(v -> CompletableFuture.runAsync(() -> {
+            // T2的任务代码
+            System.out.println("Task T2 is running");
+        }));
+
+        CompletableFuture<Void> T3 = T2.thenComposeAsync(v -> CompletableFuture.runAsync(() -> {
+            // T3的任务代码
+            System.out.println("Task T3 is running");
+        }));
+
+        T3.join(); // 等待所有任务完成
+    }
+
+    public static <T> void printArray(T[] array) {
+        for (T item : array) {
+            System.out.println(item);
+        }
+    }
+
+
+    //写一段代码保证T1，T2,T3顺序执行
+
+    // 返回两个元素中“更大者”，要求 T 是可比较的
+    public static <T extends Comparable<T>> T max(T a, T b) {
+        return (a.compareTo(b) >= 0) ? a : b;
+    }
+
+    //力扣 389
+    public static char findTheDifference(String s, String t) {
+
+        // 获取字符串t的最后一个字符
+        char c = t.charAt(t.length() - 1);
+        // 创建一个HashMap来存储字符串s中每个字符出现的次数
+        Map<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            map.put(s.charAt(i), map.getOrDefault(s.charAt(i), 0) + 1);
+        }
+        for (int i = 0; i < t.length(); i++) {
+            if (map.get(t.charAt(i)) == null || map.get(t.charAt(i)) == 0) {
+                return t.charAt(i);
+            } else {
+                map.put(t.charAt(i), map.get(t.charAt(i)) - 1);
+            }
+        }
+
+        return c;
+    }
+
+    //力扣459
+    public static boolean repeatedSubstringPattern(String s) {
+        int[] array = new int[26];
+        for (char c : s.toCharArray()) {
+            array[c - 'a']++;
+        }
+        for (int i = 0; i < array.length; i++) {
+            if ((array[i] > 1 && s.length() % array[i] != 0) || (array[i] == 1)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void selectSort(int[] nums) {
+        for (int i = 0; i < nums.length - 1; i++) {
+            int k = i;
+            for (int j = k + 1; j < nums.length; j++) {
+                if (nums[j] < nums[k]) {
+                    k = j;
+                }
+            }
+            int temp = nums[i];
+            nums[i] = nums[k];
+            nums[k] = temp;
+        }
+    }
+
+    public void insertSort(int[] nums) {
+        for (int i = 1; i < nums.length - 1; i++) {
+            int base = nums[i];
+            int j = i - 1;
+        }
+    }
+
+    public List<List<Integer>> threeSum(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] > 0) break;
+            if (nums[i] == nums[i + 1]) continue;
+            int left = i + 1;
+            int right = nums.length - 1;
+            while (left < right) {
+                int sum = nums[i] + nums[left] + nums[right];
+                if (sum < 0) {
+                    while (left < right && nums[left] == nums[left++]) ;
+                } else if (sum > 0) {
+                    while (left < right && nums[right] == nums[right--]) ;
+                } else {
+                    res.add(new ArrayList<>(Arrays.asList(nums[i], nums[left], nums[right])));
+                    while (left < right && nums[left] == nums[left++]) ;
+                    while (left < right && nums[right] == nums[right--]) ;
+                }
+            }
+        }
+        return res;
+    }
+
+    public List<List<String>> groupAnagrams(String[] strs) {
+        List<List<String>> res = new ArrayList<>();
+        Map<String, List<String>> map = new HashMap<>();
+        for (int i = 0; i < strs.length; i++) {
+            String str = strs[i];
+            char[] chars = str.toCharArray();
+            Arrays.sort(chars);
+            String key = new String(chars);
+            if (map.containsKey(key)) {
+                map.get(key).add(str);
+            } else {
+                List<String> list = new ArrayList<>();
+                list.add(str);
+                map.put(key, list);
+            }
+        }
+        return new ArrayList<>(map.values());
+    }
+
+    public boolean canJump(int[] nums) {
+        int length = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            if (length >= i)
+                length = Math.max(length, i + nums[i]);
+            else
+                return false;
+        }
+        return true;
+    }
+
+    public int peakIndexInMountainArray(int[] arr) {
+        int index = 0;
+        for (int i = 1; i < arr.length; i++) {
+            if (arr[i] > arr[i - 1]) {
+                index = i;
+            } else
+                break;
+        }
+        return index;
+    }
+
+    public int vowelStrings(String[] words, int left, int right) {
+        int res = 0;
+        for (int i = left; i <= right; i++) {
+            if ((words[i].charAt(0) == 'a' || words[i].charAt(0) == 'e' || words[i].charAt(0) == 'i' || words[i].charAt(0) == 'o' || words[i].charAt(0) == 'u') &&
+                    (words[i].charAt(words[i].length() - 1) == 'a' || words[i].charAt(words[i].length() - 1) == 'e' || words[i].charAt(words[i].length() - 1) == 'i' || words[i].charAt(words[i].length() - 1) == 'o' || words[i].charAt(words[i].length() -
+                            1) == 'u')) {
+                res++;
+            }
+        }
+        return res;
+    }
+
+    public int maxScore(String s) {
+        int res = 0;
+        for (int i = 0; i < s.length() - 1; i++) {
+            int sum1 = 0;
+            int sum2 = 0;
+            for (int k = 0; k <= i; k++) {
+                if (s.charAt(k) == '1')
+                    sum1++;
+            }
+            for (int j = i + 1; j < s.length(); j++) {
+                if (s.charAt(j) == '1') {
+                    sum2++;
+                }
+            }
+            res = Math.max(res, sum1 + sum2);
+        }
+
+        return res;
+    }
+
+    public int[][] transpose(int[][] matrix) {
+        int[][] res = new int[matrix[0].length][matrix.length];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                res[j][i] = matrix[i][j];
+            }
+        }
+        return res;
+    }
+
+    public double[] convertTemperature(double celsius) {
+        return new double[]{celsius + 273.15, celsius * 1.8 + 32};
+    }
+
+    public int maxFreeTime(int eventTime, int k, int[] startTime, int[] endTime) {
+        // total 表示k窗口内活动的总时长
+        int s = 0, total = 0, maxTime = startTime[0];
+
+        for (int i = 0; i < startTime.length; i++) {
+
+            // 入
+            total += endTime[i] - startTime[i];
+
+            // 还没有到窗口大小
+            if (i < k - 1) continue;
+
+            // 更新
+            if (i < startTime.length - 1) {
+                maxTime = Math.max(maxTime, startTime[i + 1] - s - total);
+            } else {
+                maxTime = Math.max(maxTime, eventTime - s - total);
+            }
+
+            // 出
+            s = endTime[i - k + 1];
+            total -= endTime[i - k + 1] - startTime[i - k + 1];
+
+        }
+        return maxTime;
+    }
 
     public ListNode addTwoNumbersV2(ListNode l1, ListNode l2) {
         ListNode tailL1 = reverseList(l1);
@@ -31,7 +312,7 @@ public class TestUtil {
         ListNode head = new ListNode();
         ListNode temp = head;
         int carry = 0;
-        while (l1 !=null || l2 != null) {
+        while (l1 != null || l2 != null) {
             int sum = carry;
             if (l1 != null) {
                 sum += l1.val;
@@ -115,12 +396,12 @@ public class TestUtil {
                 five--;
                 ten++;
             } else if (bills[i] == 20) {
-                if (ten > 0 && five > 0){
+                if (ten > 0 && five > 0) {
                     ten--;
                     five--;
-                } else if (five >= 3){
+                } else if (five >= 3) {
                     five -= 3;
-                } else{
+                } else {
                     return false;
                 }
             }
@@ -146,8 +427,8 @@ public class TestUtil {
     }
 
     public String tictactoe(int[][] moves) {
-        for(int i=0; i<moves.length; i++){
-            if(moves[i][0] == moves[i][1] && moves[i][1] == moves[i][2])
+        for (int i = 0; i < moves.length; i++) {
+            if (moves[i][0] == moves[i][1] && moves[i][1] == moves[i][2])
                 return "A";
             if (moves[0][i] == moves[1][i] && moves[1][i] == moves[2][i])
                 return "B";
@@ -169,7 +450,7 @@ public class TestUtil {
                 y--;
             }
         }
-        if (x==0 && y==0) {
+        if (x == 0 && y == 0) {
             res = true;
         }
         return res;
@@ -203,8 +484,8 @@ public class TestUtil {
 
     public int possibleStringCount(String word) {
         int count = 1;
-        for(int i=0; i<word.length()-1; i++){
-            for (int j = i+1; j < word.length(); j++){
+        for (int i = 0; i < word.length() - 1; i++) {
+            for (int j = i + 1; j < word.length(); j++) {
                 if (word.charAt(i) == word.charAt(j))
                     count++;
                 else break;
@@ -215,9 +496,9 @@ public class TestUtil {
     }
 
     public String toLowerCase(String s) {
-        for(int i=0; i<s.length(); i++){
-            if(s.charAt(i) >= 'A' && s.charAt(i) <= 'Z'){
-                s = s.replace(s.charAt(i), (char)(s.charAt(i) + 32));
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) >= 'A' && s.charAt(i) <= 'Z') {
+                s = s.replace(s.charAt(i), (char) (s.charAt(i) + 32));
             }
         }
         return s;
@@ -289,10 +570,10 @@ public class TestUtil {
 
     //力扣283
     public void moveZeroes(int[] nums) {
-        for (int i=0; i<nums.length; i++){
-            if (nums[i] == 0){
-                for (int j=i+1; j<nums.length; j++){
-                    if (nums[j] != 0){
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == 0) {
+                for (int j = i + 1; j < nums.length; j++) {
+                    if (nums[j] != 0) {
                         nums[i] = nums[j];
                         nums[j] = 0;
                         break;
@@ -302,39 +583,6 @@ public class TestUtil {
         }
     }
 
-    public static <T> void printArray(T[] array) {
-        for (T item : array) {
-            System.out.println(item);
-        }
-    }
-
-    // 返回两个元素中“更大者”，要求 T 是可比较的
-    public static <T extends Comparable<T>> T max(T a, T b) {
-        return (a.compareTo(b) >= 0) ? a : b;
-    }
-
-
-    //力扣 389
-    public static char findTheDifference(String s, String t) {
-
-        // 获取字符串t的最后一个字符
-        char c = t.charAt(t.length() - 1);
-        // 创建一个HashMap来存储字符串s中每个字符出现的次数
-        Map<Character, Integer> map = new HashMap<>();
-        for (int i = 0; i < s.length(); i++) {
-            map.put(s.charAt(i), map.getOrDefault(s.charAt(i), 0) + 1);
-        }
-        for (int i = 0; i < t.length(); i++) {
-            if (map.get(t.charAt(i)) == null || map.get(t.charAt(i)) == 0) {
-                return t.charAt(i);
-            } else {
-                map.put(t.charAt(i), map.get(t.charAt(i)) - 1);
-            }
-        }
-
-        return c;
-    }
-
     //力扣28
     public int strStr(String haystack, String needle) {
         int res = -1;
@@ -342,10 +590,10 @@ public class TestUtil {
             return res;
         }
         for (int i = 0; i < haystack.length(); i++) {
-            if (haystack.length()-1-i < needle.length()){
+            if (haystack.length() - 1 - i < needle.length()) {
                 return -1;
             }
-            if (haystack.substring(i, i + needle.length()).equals(needle)){
+            if (haystack.startsWith(needle, i)) {
                 res = i;
                 break;
             }
@@ -356,10 +604,10 @@ public class TestUtil {
     //力扣3423
     public int maxAdjacentDistance(int[] nums) {
         int res = 0;
-        for(int i = 0; i < nums.length-1; i++){
-            res = Math.max(res, Math.abs(nums[i] - nums[i+1]));
+        for (int i = 0; i < nums.length - 1; i++) {
+            res = Math.max(res, Math.abs(nums[i] - nums[i + 1]));
         }
-        res = Math.max(res, Math.abs(nums[nums.length-1])-nums[0]);
+        res = Math.max(res, Math.abs(nums[nums.length - 1]) - nums[0]);
         return res;
     }
 
@@ -383,18 +631,21 @@ public class TestUtil {
         return true;
     }
 
-    //力扣459
-    public static boolean repeatedSubstringPattern(String s) {
-        int[] array = new int[26];
-        for (char c: s.toCharArray()){
-            array[c - 'a']++;
+    public class ListNode {
+        int val;
+        ListNode next;
+
+        ListNode() {
         }
-        for (int i = 0; i < array.length; i++) {
-            if ((array[i]>1&&s.length()%array[i]!=0) || (array[i]==1)) {
-                return false;
-            }
+
+        ListNode(int val) {
+            this.val = val;
         }
-        return true;
+
+        ListNode(int val, ListNode next) {
+            this.val = val;
+            this.next = next;
+        }
     }
 
 }
